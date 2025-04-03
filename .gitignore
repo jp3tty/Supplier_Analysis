@@ -33,3 +33,7 @@ wheels/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# Data files
+*.csv
+data/
