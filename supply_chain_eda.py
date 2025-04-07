@@ -20,17 +20,45 @@ def load_data():
     
     return df, description
 
-def analyze_dataframe(df):
+def analyze_dataframe(df, description):
     """Perform initial analysis of the dataframe."""
     print("\n=== Dataset Overview ===")
     print(f"Number of rows: {df.shape[0]:,}")
     print(f"Number of columns: {df.shape[1]:,}")
     
-    print("\n=== Column Names ===")
-    print("\n".join(df.columns.tolist()))
-    
     print("\n=== Column Information ===")
-    print(df.info())
+    # Create a DataFrame with column information
+    info_df = pd.DataFrame({
+        'Column': df.columns,
+        'Non-Null Count': df.count(),
+        'Dtype': df.dtypes
+    })
+    
+    # Merge with description
+    info_df = info_df.merge(
+        description[['FIELDS', 'DESCRIPTION']],
+        left_on='Column',
+        right_on='FIELDS',
+        how='left'
+    )
+    
+    # Format and print the information with better alignment
+    header = f"{'#':<3} {'Column':<35} {'Non-Null':<10} {'Dtype':<10} {'Description':<45}"
+    separator = "-" * len(header)
+    print("\n" + header)
+    print(separator)
+    
+    for idx, row in info_df.iterrows():
+        # Clean up the description by removing leading/trailing whitespace and colons
+        desc = str(row['DESCRIPTION']).strip()
+        if desc.startswith(':'):
+            desc = desc[1:].strip()
+        
+        # Format the non-null count without commas
+        non_null = f"{row['Non-Null Count']}"
+        
+        # Ensure consistent spacing
+        print(f"{idx+1:<3} {row['Column']:<35} {non_null:<10} {str(row['Dtype']):<10} {desc[:45]:<45}")
     
     print("\n=== Missing Values ===")
     missing_values = df.isnull().sum()
@@ -40,9 +68,6 @@ def analyze_dataframe(df):
         'Percentage': missing_percent
     })
     print(missing_df[missing_df['Missing Values'] > 0])
-    
-    print("\n=== Basic Statistics ===")
-    print(df.describe())
 
 def plot_numerical_distributions(df):
     """Plot distributions of numerical columns."""
@@ -70,16 +95,16 @@ def main():
     df, description = load_data()
     
     # Perform initial analysis
-    analyze_dataframe(df)
+    analyze_dataframe(df, description)
     
     # Plot numerical distributions
     print("\nGenerating distribution plots...")
     plot_numerical_distributions(df)
     print("Plots saved to 'data/numerical_distributions.png'")
     
-    # Print description file contents
-    print("\n=== Dataset Description ===")
-    print(description.to_string())
+    # # Print description file contents
+    # print("\n=== Dataset Description ===")
+    # print(description.to_string())
 
 if __name__ == "__main__":
     main() 
