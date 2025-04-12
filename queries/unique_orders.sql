@@ -19,3 +19,16 @@ FROM supply_chain_data
 GROUP BY `Order Id`
 HAVING COUNT(*) > 1
 ORDER BY occurrence_count DESC;
+
+SELECT 
+    occurrence_count,
+    COUNT(*) as number_of_orders
+FROM (
+    SELECT 
+        `Order Id`,
+        COUNT(*) as occurrence_count
+    FROM supply_chain_data
+    GROUP BY `Order Id`
+) as order_counts
+GROUP BY occurrence_count
+ORDER BY occurrence_count;
