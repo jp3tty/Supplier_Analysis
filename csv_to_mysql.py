@@ -33,7 +33,8 @@ def create_mysql_engine(db_config):
             host=db_config['host'],
             user=db_config['user'],
             password=db_config['password'],
-            port=db_config['port']
+            port=db_config['port'],
+            ssl={'ca': None}  # Disable SSL for local development
         )
         
         # Create database if it doesn't exist
@@ -44,7 +45,7 @@ def create_mysql_engine(db_config):
         
         # Create engine with the database
         connection_string = f"mysql+pymysql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
-        return create_engine(connection_string)
+        return create_engine(connection_string, connect_args={'ssl': {'ca': None}})
     except Exception as err:
         logger.error(f"MySQL Connection Error: {err}")
         logger.error("Please check your MySQL credentials and make sure the server is running")
