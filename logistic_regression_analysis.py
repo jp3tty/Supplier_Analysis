@@ -12,6 +12,7 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 def preprocess_data(df):
     """Preprocess the data for logistic regression."""
@@ -70,12 +71,50 @@ def train_model(X, y):
         param_grid,
         cv=5,  # 5-fold cross-validation
         scoring='roc_auc',  # Use ROC AUC as the scoring metric
-        n_jobs=-1  # Use all available cores
+        n_jobs=-1,  # Use all available cores
+        return_train_score=True  # Return training scores for each parameter combination
     )
     
     # Fit the grid search
     print("Performing hyperparameter tuning...")
     grid_search.fit(X_train, y_train)
+    
+    # Create results DataFrame
+    results_df = pd.DataFrame(grid_search.cv_results_)
+    
+    # Select and rename relevant columns
+    columns_to_keep = [
+        'param_C',
+        'param_penalty',
+        'param_solver',
+        'param_max_iter',
+        'mean_train_score',
+        'mean_test_score',
+        'std_train_score',
+        'std_test_score',
+        'rank_test_score'
+    ]
+    
+    results_df = results_df[columns_to_keep]
+    results_df.columns = [
+        'C',
+        'Penalty',
+        'Solver',
+        'Max Iterations',
+        'Mean Train Score',
+        'Mean Test Score',
+        'Std Train Score',
+        'Std Test Score',
+        'Rank'
+    ]
+    
+    # Sort by rank
+    results_df = results_df.sort_values('Rank')
+    
+    # Save results to CSV
+    results_file = 'hyperparameter_results.csv'
+    results_df.to_csv(results_file, index=False)
+    print(f"\nHyperparameter tuning results saved to {results_file}")
     
     # Get the best model
     model = grid_search.best_estimator_

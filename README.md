@@ -1,6 +1,6 @@
 # Supplier Analysis Project
 
-This project focuses on analyzing supplier data to identify patterns and insights that can help optimize supply chain operations. The analysis includes feature selection and importance analysis to determine which factors most significantly impact delivery performance.
+This project focuses on analyzing supplier data to identify patterns and insights that can help optimize supply chain operations. The analysis includes feature selection and importance analysis to determine which factors most significantly impact delivery performance. The data was sourced from Kaggle (https://www.kaggle.com/code/hetul173757/notebook681ff23643/input).
 
 ## Project Structure
 
