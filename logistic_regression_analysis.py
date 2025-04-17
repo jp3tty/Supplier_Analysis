@@ -124,6 +124,33 @@ def train_model(X, y):
     for param, value in grid_search.best_params_.items():
         print(f"{param}: {value}")
     
+    # Analyze feature importance
+    print("\nFeature Importance Analysis:")
+    feature_importance = pd.DataFrame({
+        'Feature': X_train.columns,
+        'Coefficient': model.coef_[0],
+        'Absolute_Coefficient': abs(model.coef_[0])
+    })
+    
+    # Sort by absolute coefficient value
+    feature_importance = feature_importance.sort_values('Absolute_Coefficient', ascending=False)
+    
+    # Calculate odds ratios
+    feature_importance['Odds_Ratio'] = np.exp(feature_importance['Coefficient'])
+    
+    # Save feature importance to CSV
+    feature_importance.to_csv('feature_importance.csv', index=False)
+    
+    # Print top 10 most important features
+    print("\nTop 10 Factors Affecting Delivery Delays:")
+    for idx, row in feature_importance.head(10).iterrows():
+        direction = "increases" if row['Coefficient'] > 0 else "decreases"
+        print(f"{row['Feature']}:")
+        print(f"  - {direction} the likelihood of delivery delay")
+        print(f"  - Odds Ratio: {row['Odds_Ratio']:.4f}")
+        print(f"  - Coefficient: {row['Coefficient']:.4f}")
+        print()
+    
     # Make predictions
     y_pred = model.predict(X_test)
     y_pred_proba = model.predict_proba(X_test)[:, 1]
@@ -159,6 +186,17 @@ def train_model(X, y):
     plt.title('ROC Curve')
     plt.legend()
     plt.savefig('roc_curve.png')
+    plt.close()
+    
+    # Plot feature importance
+    plt.figure(figsize=(12, 8))
+    sns.barplot(x='Absolute_Coefficient', y='Feature', 
+                data=feature_importance.head(10))
+    plt.title('Top 10 Factors Affecting Delivery Delays')
+    plt.xlabel('Absolute Coefficient Value')
+    plt.ylabel('Feature')
+    plt.tight_layout()
+    plt.savefig('feature_importance.png')
     plt.close()
     
     return model, X_train.columns
