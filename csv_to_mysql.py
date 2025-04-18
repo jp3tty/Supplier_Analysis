@@ -102,12 +102,13 @@ def main():
         csv_files = {
             'DataCoSupplyChainDataset.csv': 'supply_chain_data',
             'DescriptionDataCoSupplyChain.csv': 'supply_chain_description',
-            'tokenized_access_logs.csv': 'access_logs'
+            'tokenized_access_logs.csv': 'access_logs',
+            'temporal_features.csv': 'temporal_features'
         }
         
         # Load each CSV file
         for csv_file, table_name in csv_files.items():
-            csv_path = os.path.join('data', csv_file)
+            csv_path = os.path.join('data', 'input', csv_file)
             if os.path.exists(csv_path):
                 load_csv_to_mysql(csv_path, table_name, engine)
             else:
