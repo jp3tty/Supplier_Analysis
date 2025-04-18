@@ -112,7 +112,8 @@ def train_model(X, y):
     results_df = results_df.sort_values('Rank')
     
     # Save results to CSV
-    results_file = 'hyperparameter_results.csv'
+    results_file = 'data/output/hyperparameter_results.csv'
+    os.makedirs(os.path.dirname(results_file), exist_ok=True)
     results_df.to_csv(results_file, index=False)
     print(f"\nHyperparameter tuning results saved to {results_file}")
     
@@ -139,7 +140,8 @@ def train_model(X, y):
     feature_importance['Odds_Ratio'] = np.exp(feature_importance['Coefficient'])
     
     # Save feature importance to CSV
-    feature_importance.to_csv('feature_importance.csv', index=False)
+    feature_importance_file = 'data/output/feature_importance.csv'
+    feature_importance.to_csv(feature_importance_file, index=False)
     
     # Print top 10 most important features
     print("\nTop 10 Factors Affecting Delivery Delays:")
@@ -173,7 +175,7 @@ def train_model(X, y):
     plt.title('Confusion Matrix')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.savefig('confusion_matrix.png')
+    plt.savefig('data/output/plots/confusion_matrix.png')
     plt.close()
     
     # Plot ROC curve
@@ -185,7 +187,7 @@ def train_model(X, y):
     plt.ylabel('True Positive Rate')
     plt.title('ROC Curve')
     plt.legend()
-    plt.savefig('roc_curve.png')
+    plt.savefig('data/output/plots/roc_curve.png')
     plt.close()
     
     # Plot feature importance
@@ -196,7 +198,7 @@ def train_model(X, y):
     plt.xlabel('Absolute Coefficient Value')
     plt.ylabel('Feature')
     plt.tight_layout()
-    plt.savefig('feature_importance.png')
+    plt.savefig('data/output/plots/feature_importance.png')
     plt.close()
     
     return model, X_train.columns
