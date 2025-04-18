@@ -7,10 +7,23 @@ This project focuses on analyzing supplier data to identify patterns and insight
 ```
 supplier_analysis/
 ├── data/                    # Data directory
-│   ├── DataCoSupplyChainDataset.csv
-│   └── DescriptionDataCoSupplyChain.csv
+│   ├── input/              # Input data files
+│   │   ├── DataCoSupplyChainDataset.csv
+│   │   ├── DescriptionDataCoSupplyChain.csv
+│   │   ├── tokenized_access_logs.csv
+│   │   └── temporal_features.csv
+│   └── output/             # Output files
+│       ├── plots/          # Visualization files
+│       │   ├── confusion_matrix.png
+│       │   ├── roc_curve.png
+│       │   └── feature_importance.png
+│       ├── feature_importance.csv
+│       └── hyperparameter_results.csv
 ├── feature_selection_v1.py  # Initial feature selection implementation
 ├── feature_selection_v2.py  # Enhanced feature selection with improved preprocessing
+├── logistic_regression_analysis.py  # Logistic regression analysis with hyperparameter tuning
+├── csv_to_mysql.py         # Script to load CSV files into MySQL database
+├── create_temporal_features.py  # Script to generate temporal features from order dates
 ├── requirements.txt         # Python dependencies
 └── README.md               # Project documentation
 ```
@@ -21,7 +34,10 @@ supplier_analysis/
 - **Feature Selection**: Implements multiple feature selection methods:
   - ANOVA F-test
   - Mutual Information
-- **Visualization**: Generates plots showing feature importance scores
+- **Logistic Regression Analysis**: Includes hyperparameter tuning and feature importance analysis
+- **Temporal Feature Extraction**: Extracts and analyzes time-based features from order dates
+- **Database Integration**: Loads processed data into MySQL database
+- **Visualization**: Generates plots showing feature importance scores and model performance metrics
 - **Categorical Feature Analysis**: Special handling and analysis of categorical variables
 
 ## Setup Instructions
@@ -43,33 +59,50 @@ supplier_analysis/
    pip install -r requirements.txt
    ```
 
+4. Set up MySQL database (optional):
+   - Configure database credentials in environment variables
+   - Run `csv_to_mysql.py` to load data into the database
+
 ## Usage
 
-The project contains two versions of feature selection:
+The project contains several analysis scripts:
 
-1. **Version 1** (`feature_selection_v1.py`):
-   - Basic feature selection implementation
-   - Uses label encoding for categorical variables
-   - Generates feature importance plots
+1. **Feature Selection**:
+   - `feature_selection_v1.py`: Basic implementation with label encoding
+   - `feature_selection_v2.py`: Enhanced version with one-hot encoding
 
-2. **Version 2** (`feature_selection_v2.py`):
-   - Enhanced preprocessing with one-hot encoding
-   - Additional datetime feature extraction
-   - More detailed categorical feature analysis
-   - Improved visualization and reporting
+2. **Logistic Regression Analysis** (`logistic_regression_analysis.py`):
+   - Hyperparameter tuning
+   - Feature importance analysis
+   - Model performance evaluation
+   - Generates visualizations in `data/output/plots/`
 
-To run either version:
+3. **Temporal Feature Generation** (`create_temporal_features.py`):
+   - Extracts day of week and month from order dates
+   - Creates temporal_features.csv in input directory
+
+4. **Database Integration** (`csv_to_mysql.py`):
+   - Loads CSV files into MySQL database
+   - Handles multiple file encodings
+   - Creates necessary database tables
+
+To run any script:
 ```bash
-python feature_selection_v1.py  # For version 1
-python feature_selection_v2.py  # For version 2
+python script_name.py
 ```
 
 ## Output
 
-The scripts generate:
-- Feature importance scores saved as CSV files
-- Visualization plots showing top features
-- Detailed analysis of categorical features (in v2)
+The scripts generate various outputs organized in the `data/output` directory:
+
+- **CSV Files**:
+  - Feature importance scores
+  - Hyperparameter tuning results
+
+- **Visualizations** (in `data/output/plots/`):
+  - Confusion matrix
+  - ROC curve
+  - Feature importance plots
 
 ## Dependencies
 
@@ -78,6 +111,9 @@ The scripts generate:
 - scikit-learn
 - matplotlib
 - seaborn
+- pymysql
+- sqlalchemy
+- python-dotenv
 
 All dependencies are listed in `requirements.txt`.
 
