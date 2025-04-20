@@ -149,8 +149,8 @@ def train_model(X, y):
         feature_importance = pd.DataFrame({
             'Feature': X_train.columns,
             'Class': class_label,
-            'Coefficient': model.estimator_.coef_[i],
-            'Absolute_Coefficient': abs(model.estimator_.coef_[i])
+            'Coefficient': model.estimators_[i].coef_[0],
+            'Absolute_Coefficient': abs(model.estimators_[i].coef_[0])
         })
         feature_importance_list.append(feature_importance)
     
@@ -246,7 +246,7 @@ def main():
     print("\nFeature Importance:")
     importance = pd.DataFrame({
         'Feature': feature_names,
-        'Coefficient': model.estimator_.coef_[0]
+        'Coefficient': model.estimators_[0].coef_[0]
     })
     importance = importance.sort_values('Coefficient', ascending=False)
     print(importance)
