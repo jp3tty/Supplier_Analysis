@@ -26,7 +26,7 @@ def preprocess_data(df):
     df['day_of_week'] = df['order_date'].dt.day_name()
     df['month'] = df['order_date'].dt.month_name()
     
-    # Select features for the model
+    # Select features for the model (excluding Days for shipment (scheduled))
     features = [
         'Order Item Quantity',
         'Order Item Total',
@@ -35,8 +35,7 @@ def preprocess_data(df):
         'Shipping Mode',
         'day_of_week',
         'month',
-        'Days for shipping (real)',
-        'Days for shipment (scheduled)'
+        'Days for shipping (real)'  # Only keeping real shipping days
     ]
     
     # Create dummy variables for categorical features
@@ -50,8 +49,7 @@ def preprocess_data(df):
     numerical_features = [
         'Order Item Quantity',
         'Order Item Total',
-        'Days for shipping (real)',
-        'Days for shipment (scheduled)'
+        'Days for shipping (real)'
     ]
     
     scaler = StandardScaler()
@@ -72,7 +70,7 @@ def train_model(X, y):
         'estimator__penalty': ['l1', 'l2'],
         'estimator__solver': ['liblinear'],
         'estimator__max_iter': [1000, 2000, 3000],
-        'estimator__class_weight': ['balanced']  # Add class weights
+        'estimator__class_weight': ['balanced']
     }
     
     # Initialize GridSearchCV with OneVsRestClassifier
@@ -101,6 +99,7 @@ def train_model(X, y):
         'param_estimator__penalty',
         'param_estimator__solver',
         'param_estimator__max_iter',
+        'param_estimator__class_weight',
         'mean_train_score',
         'mean_test_score',
         'std_train_score',
@@ -114,6 +113,7 @@ def train_model(X, y):
         'Penalty',
         'Solver',
         'Max Iterations',
+        'Class Weight',
         'Mean Train Score',
         'Mean Test Score',
         'Std Train Score',
@@ -125,7 +125,7 @@ def train_model(X, y):
     results_df = results_df.sort_values('Rank')
     
     # Save results to CSV
-    results_file = 'data/output/delivery_status_hyperparameter_results.csv'
+    results_file = 'data/output/delivery_status_v2_hyperparameter_results.csv'
     os.makedirs(os.path.dirname(results_file), exist_ok=True)
     results_df.to_csv(results_file, index=False)
     print(f"\nHyperparameter tuning results saved to {results_file}")
@@ -165,7 +165,7 @@ def train_model(X, y):
     feature_importance['Odds_Ratio'] = np.exp(feature_importance['Coefficient'])
     
     # Save feature importance to CSV
-    feature_importance_file = 'data/output/delivery_status_feature_importance.csv'
+    feature_importance_file = 'data/output/delivery_status_v2_feature_importance.csv'
     feature_importance.to_csv(feature_importance_file, index=False)
     
     # Print top 10 most important features for each class
@@ -205,10 +205,10 @@ def train_model(X, y):
                 cmap='Blues',
                 xticklabels=classes,
                 yticklabels=classes)
-    plt.title('Confusion Matrix - Delivery Status')
+    plt.title('Confusion Matrix - Delivery Status (v2)')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
-    plt.savefig('data/output/plots/delivery_status_confusion_matrix.png')
+    plt.savefig('data/output/plots/delivery_status_v2_confusion_matrix.png')
     plt.close()
     
     # Plot feature importance for each class
@@ -217,11 +217,11 @@ def train_model(X, y):
         plt.subplot(len(classes), 1, i+1)
         class_importance = feature_importance[feature_importance['Class'] == class_label].head(10)
         sns.barplot(x='Absolute_Coefficient', y='Feature', data=class_importance)
-        plt.title(f'Top 10 Factors Affecting Delivery Status - {class_label}')
+        plt.title(f'Top 10 Factors Affecting Delivery Status - {class_label} (v2)')
         plt.xlabel('Absolute Coefficient Value')
         plt.ylabel('Feature')
     plt.tight_layout()
-    plt.savefig('data/output/plots/delivery_status_feature_importance.png')
+    plt.savefig('data/output/plots/delivery_status_v2_feature_importance.png')
     plt.close()
     
     return model, X_train.columns
